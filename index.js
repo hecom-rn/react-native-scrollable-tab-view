@@ -10,17 +10,19 @@ const {
   ScrollView,
   Platform,
   StyleSheet,
-  ViewPagerAndroid,
   InteractionManager,
 } = ReactNative;
+
+const ViewPagerAndroid = require('@react-native-community/viewpager');
 const TimerMixin = require('react-timer-mixin');
+const ViewPager = require('@react-native-community/viewpager');
 
 const SceneComponent = require('./SceneComponent');
 const DefaultTabBar = require('./DefaultTabBar');
 const ScrollableTabBar = require('./ScrollableTabBar');
 
 const AnimatedViewPagerAndroid = Platform.OS === 'android' ?
-  Animated.createAnimatedComponent(ViewPagerAndroid) :
+  Animated.createAnimatedComponent(ViewPager) :
   undefined;
 
 const ScrollableTabView = createReactClass({
@@ -30,6 +32,7 @@ const ScrollableTabView = createReactClass({
     ScrollableTabBar,
   },
   scrollOnMountCalled: false,
+  tabWillChangeWithoutGesture: false,
 
   propTypes: {
     tabBarPosition: PropTypes.oneOf(['top', 'bottom', 'overlayTop', 'overlayBottom', ]),
@@ -38,6 +41,11 @@ const ScrollableTabView = createReactClass({
     onChangeTab: PropTypes.func,
     onScroll: PropTypes.func,
     renderTabBar: PropTypes.any,
+    tabBarUnderlineStyle: ViewPropTypes.style,
+    tabBarBackgroundColor: PropTypes.string,
+    tabBarActiveTextColor: PropTypes.string,
+    tabBarInactiveTextColor: PropTypes.string,
+    tabBarTextStyle: PropTypes.object,
     style: ViewPropTypes.style,
     contentProps: PropTypes.object,
     scrollWithoutAnimation: PropTypes.bool,
@@ -107,13 +115,13 @@ const ScrollableTabView = createReactClass({
     };
   },
 
-  componentWillReceiveProps(props) {
-    if (props.children !== this.props.children) {
-      this.updateSceneKeys({ page: this.state.currentPage, children: props.children, });
+  componentDidUpdate(prevProps) {
+    if (this.props.children !== prevProps.children) {
+      this.updateSceneKeys({ page: this.state.currentPage, children: this.props.children, });
     }
 
-    if (props.page >= 0 && props.page !== this.state.currentPage) {
-      this.goToPage(props.page);
+    if (this.props.page >= 0 && this.props.page !== this.state.currentPage) {
+      this.goToPage(this.props.page);
     }
   },
 
@@ -130,14 +138,15 @@ const ScrollableTabView = createReactClass({
     if (Platform.OS === 'ios') {
       const offset = pageNumber * this.state.containerWidth;
       if (this.scrollView) {
-        this.scrollView.getNode().scrollTo({x: offset, y: 0, animated: !this.props.scrollWithoutAnimation, });
+        this.scrollView.scrollTo({x: offset, y: 0, animated: !this.props.scrollWithoutAnimation, });
       }
     } else {
       if (this.scrollView) {
+        this.tabWillChangeWithoutGesture = true;
         if (this.props.scrollWithoutAnimation) {
-          this.scrollView.getNode().setPageWithoutAnimation(pageNumber);
+          this.scrollView.setPageWithoutAnimation(pageNumber);
         } else {
-          this.scrollView.getNode().setPage(pageNumber);
+          this.scrollView.setPage(pageNumber);
         }
       }
     }
@@ -298,10 +307,11 @@ const ScrollableTabView = createReactClass({
     }
 
     const currentPage = this.state.currentPage;
-    this.updateSceneKeys({
+    !this.tabWillChangeWithoutGesture && this.updateSceneKeys({
       page: localNextPage,
       callback: this._onChangeTab.bind(this, currentPage, localNextPage),
     });
+    this.tabWillChangeWithoutGesture = false;
   },
 
   _onChangeTab(prevPage, currentPage) {
