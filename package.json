@@ -25,16 +25,17 @@
     "url": "https://github.com/brentvatne/react-native-scrollable-tab-view/issues"
   },
   "peerDependencies": {
-    "react-native": ">=0.20.0"
+    "react-native": ">=0.20.0",
+    "react-native-pager-view": ">=5.4.11"
   },
   "homepage": "https://github.com/brentvatne/react-native-scrollable-tab-view#readme",
   "dependencies": {
-    "@react-native-community/viewpager": "3.3.0",
     "create-react-class": "^15.6.2",
     "prop-types": "^15.6.0",
     "react-timer-mixin": "^0.13.3"
   },
   "devDependencies": {
+    "react-native-pager-view": "^5.4.11",
     "babel-eslint": "^6.1.2",
     "eslint": "^3.1.1"
   }
