@@ -223,7 +223,7 @@ const ScrollableTabView = createReactClass({
   },
 
   _makeSceneKey(child, idx) {
-    return child.props.tabLabel + '_' + idx;
+    return (child.props.sceneKey || child.props.tabLabel) + '_' + idx;
   },
 
   renderScrollableContent() {
