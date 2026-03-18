@@ -19,7 +19,8 @@ const ViewPager = require('react-native-pager-view').default;
 
 const SceneComponent = require('./SceneComponent');
 const DefaultTabBar = require('./DefaultTabBar');
-const ScrollableTabBar = require('./ScrollableTabBar');
+const ScrollableTabBarModule = require('./ScrollableTabBar');
+const ScrollableTabBar = ScrollableTabBarModule.default || ScrollableTabBarModule;
 
 const AnimatedViewPagerAndroid = Platform.OS === 'android' ?
   Animated.createAnimatedComponent(ViewPager) :
@@ -70,7 +71,7 @@ const ScrollableTabView = createReactClass({
   },
 
   getInitialState() {
-    const containerWidth = Dimensions.get('window').width;
+    const containerWidth = ScrollableTabBarModule.getWidthFromStyle(style);
     let scrollValue;
     let scrollXIOS;
     let positionAndroid;
