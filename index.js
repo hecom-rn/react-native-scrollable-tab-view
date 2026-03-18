@@ -71,6 +71,7 @@ const ScrollableTabView = createReactClass({
   },
 
   getInitialState() {
+    const { style } = this.props;
     const containerWidth = ScrollableTabBarModule.getWidthFromStyle(style);
     let scrollValue;
     let scrollXIOS;
