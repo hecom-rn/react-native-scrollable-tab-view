@@ -176,6 +176,9 @@ const ScrollableTabBar = createReactClass({
     if (!scrollValue || measurements.length < tabCount) {
       return { width: 0 };
     }
+    // left: 0 钉住原点——absolute 视图未显式指定 left 时，Yoga 会按父容器
+    // flex 对齐（space-around）摆放，静态位置非 0，translateX 会整体偏移
+    const origin = { left: 0 };
     if (
       this._cachedUnderline &&
       this._cachedUnderline.measureVersion === measureVersion
@@ -194,6 +197,7 @@ const ScrollableTabBar = createReactClass({
       scaleXOutput = [scaleXOutput[0], scaleXOutput[0]];
     }
     const style = {
+      ...origin,
       width: base,
       transform: [
         {
